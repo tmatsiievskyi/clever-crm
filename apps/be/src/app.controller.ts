@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiOkResponse, ApiProperty } from '@nestjs/swagger';
+import { DbService } from './modules/db/db.service';
 
 class InitDto {
   @ApiProperty()
@@ -9,13 +10,18 @@ class InitDto {
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private dbService: DbService,
+  ) {}
 
   @Get()
   @ApiOkResponse({
     type: InitDto,
   })
-  getHello(): InitDto {
+  async getHello() {
+    const users = await this.dbService.user.findMany({});
+    console.log(users);
     return { message: this.appService.getHello() };
   }
 }
